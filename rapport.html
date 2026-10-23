@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rapport rekenmuurtje</title>
+  <link rel="stylesheet" href="stijl.css">
+  <link rel="stylesheet" href="rapport.css">
+</head>
+<body class="rapport">
+<main class="scherm actief">
+  <p class="nav"><a href="index.html">← Terug naar het muurtje</a></p>
+  <h1>Rapport rekenmuurtje</h1>
+  <p class="intro" id="datum"></p>
+
+  <div id="samenvatting" class="kaarten"></div>
+
+  <h2>Aandachtspunten</h2>
+  <div id="aandacht"></div>
+
+  <h2>Alle steentjes</h2>
+  <div id="tabellen"></div>
+
+  <h2>Voortgang bewaren of overzetten</h2>
+  <p class="uitleg">De voortgang staat in de browser van dit apparaat. Wil je die meenemen naar een ander apparaat (of een back-up maken)? Sla hem op als bestand en laad hem op het andere apparaat. Wat er al staat blijft behouden; alleen nieuwe reeksen worden toegevoegd.</p>
+  <div class="acties">
+    <button id="opslaan" type="button">Voortgang opslaan</button>
+    <label class="bestand">Voortgang laden<input id="laden" type="file" accept=".json,application/json" hidden></label>
+    <button id="print" type="button">Rapport afdrukken</button>
+  </div>
+  <p id="melding" class="melding" aria-live="polite"></p>
+
+  <h2>Zo werkt de score</h2>
+  <p class="uitleg">Per som: goed zonder hulp telt 100%, goed met hulp 50%, goed na een tweede poging 25%, fout 0%. Een steentje wordt groen vanaf 80%, blauw vanaf 50% en grijs eronder. Het rapport kijkt naar de laatste 10 reeksen per steentje; nieuwere reeksen tellen zwaarder mee. Reeksen van voor deze versie hebben alleen een score, zonder datum en details.</p>
+</main>
+<script src="sommen.js"></script>
+<script src="voortgang.js"></script>
+<script src="rapport.js"></script>
+</body>
+</html>

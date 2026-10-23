@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Rekenmuurtje</title>
+  <link rel="stylesheet" href="stijl.css">
+</head>
+<body>
+
+<section id="muur" class="scherm actief">
+  <h1>Mijn rekenmuurtje</h1>
+  <p class="intro">Tik op een steentje en oefen. Hoe groener, hoe beter!</p>
+  <div class="legenda">
+    <span><i class="kleur wit"></i>nog niet geoefend</span>
+    <span><i class="kleur grijs"></i>meer oefenen</span>
+    <span><i class="kleur blauw"></i>bijna goed</span>
+    <span><i class="kleur groen"></i>goed</span>
+  </div>
+  <div id="muur-lagen"></div>
+  <a class="klein-link" href="rapport.html">Voor ouders: rapport en voortgang bewaren</a>
+  <button id="reset" class="klein-link" type="button">Opnieuw beginnen (voor ouders)</button>
+</section>
+
+<section id="oefen" class="scherm">
+  <div class="boven">
+    <button id="terug" class="terug" type="button">← Muurtje</button>
+    <div id="sterren" aria-label="Voortgang"></div>
+  </div>
+  <div class="oefen-raster">
+    <div class="links">
+      <div id="som" class="som"></div>
+      <div id="feedback" class="feedback" aria-live="polite"></div>
+      <div id="hulp-vak" class="hulp-vak" hidden></div>
+    </div>
+    <div class="rechts">
+      <div id="toetsen" class="toetsen"></div>
+      <div class="onder">
+        <button id="hulp-knop" class="knop hulp" type="button">Hulp</button>
+        <button id="klaar-knop" class="knop klaar" type="button">Klaar</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="einde" class="scherm">
+  <div class="einde-kaart">
+    <h1 id="einde-titel">Reeks klaar!</h1>
+    <div id="einde-sterren"></div>
+    <p id="einde-tekst"></p>
+    <div id="einde-steen"></div>
+    <div class="einde-knoppen">
+      <button id="opnieuw" class="knop klaar" type="button">Nog een reeks</button>
+      <button id="naar-muur" class="knop hulp" type="button">Naar het muurtje</button>
+    </div>
+  </div>
+</section>
+
+<script src="sommen.js"></script>
+<script src="voortgang.js"></script>
+<script src="hulp.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

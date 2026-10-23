@@ -1,0 +1,27 @@
+.rapport h2 { font-size: 26px; margin: 28px 0 10px; }
+.rapport .nav a, a.klein-link { color: var(--paars); }
+.rapport .nav { margin: 0; font-size: 18px; }
+.kaarten { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.kaart { background: #fff; border: 3px solid #e9dfc6; border-radius: 16px; padding: 12px; text-align: center; }
+.kaart b { display: block; font-size: 38px; }
+.kaart span { font-size: 16px; }
+.uitleg { font-size: 17px; line-height: 1.5; max-width: 760px; }
+.lijst { background: #fff; border: 3px solid #e9dfc6; border-radius: 16px; padding: 10px 18px 10px 36px; font-size: 18px; }
+.lijst li { margin: 6px 0; }
+.leeg-tekst { font-size: 18px; opacity: .75; }
+
+table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 14px; overflow: hidden; font-size: 17px; margin-bottom: 18px; }
+caption { text-align: left; font-weight: 800; font-size: 20px; padding: 8px 4px; }
+th, td { padding: 9px 10px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; }
+th { background: #f7efd9; font-size: 15px; }
+.chip { display: inline-block; padding: 2px 10px; border-radius: 999px; border: 2px solid #aaa; font-size: 14px; font-weight: 700; white-space: nowrap; }
+.chip.wit { background: #fff; } .chip.grijs { background: var(--grijs); } .chip.blauw { background: var(--blauw); } .chip.groen { background: var(--groen); }
+.op { color: #1e8a4a; font-weight: 800; } .neer { color: #c0392b; font-weight: 800; }
+.acties { display: flex; flex-wrap: wrap; gap: 12px; }
+.acties button, .bestand { background: var(--paars); color: #fff; border: none; border-radius: 12px; padding: 12px 20px; font-size: 18px; font-weight: 700; cursor: pointer; }
+.melding { font-size: 18px; font-weight: 700; min-height: 1.5em; }
+
+@media print {
+  .nav, .acties, .melding, .klein-link { display: none; }
+  body { background: #fff; }
+}

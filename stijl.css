@@ -1,0 +1,151 @@
+:root {
+  --wit: #ffffff;
+  --grijs: #c3c8d0;
+  --blauw: #86bef5;
+  --groen: #6fd08c;
+  --tekst: #2b2f4a;
+  --paars: #6c4ad8;
+  --geel: #ffc933;
+  --blauw-blok: #2f7fd8;
+  --achtergrond: #fff6e3;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  font-family: "Nunito", "Trebuchet MS", "Arial Rounded MT Bold", system-ui, sans-serif;
+  background: var(--achtergrond);
+  color: var(--tekst);
+  user-select: none; -webkit-user-select: none;
+  touch-action: manipulation;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button:disabled { opacity: .45; cursor: default; }
+[hidden] { display: none !important; }
+
+.scherm { display: none; max-width: 1100px; margin: 0 auto; padding: 16px 20px 28px; }
+.scherm.actief { display: block; }
+
+/* ---------- Muurtje ---------- */
+h1 { font-size: 40px; margin: 8px 0 4px; text-align: center; }
+.intro { text-align: center; font-size: 22px; margin: 0 0 12px; }
+.legenda { display: flex; flex-wrap: wrap; gap: 8px 22px; justify-content: center; font-size: 18px; margin-bottom: 18px; }
+.legenda span { display: flex; align-items: center; gap: 8px; }
+.kleur { width: 26px; height: 20px; border-radius: 5px; border: 2px solid #8a6a4a; display: inline-block; }
+
+.kleur.wit, .steen.wit { background: var(--wit); }
+.kleur.grijs, .steen.grijs { background: var(--grijs); }
+.kleur.blauw, .steen.blauw { background: var(--blauw); }
+.kleur.groen, .steen.groen { background: var(--groen); }
+
+#muur-lagen { display: flex; flex-direction: column; gap: 12px; }
+.laag { display: flex; gap: 10px; align-items: stretch; }
+.laag-blok {
+  flex: 0 0 76px; border: 4px solid var(--lk); border-radius: 16px; background: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: var(--lk); font-size: 18px; font-weight: 700;
+}
+.laag-blok b { font-size: 40px; line-height: 1.1; }
+.rijen { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.rij { display: flex; gap: 8px; }
+.steen {
+  flex: 1 1 0; min-width: 0; min-height: 84px; padding: 4px;
+  border: 3px solid #c9c2b0; border-radius: 12px;
+  font-size: clamp(17px, 2.5vw, 28px); font-weight: 800;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: 0 4px 0 #c9c2b0;
+  transition: transform .1s;
+}
+.steen.groen { border-color: #3fae60; box-shadow: 0 4px 0 #3fae60; }
+.steen.blauw { border-color: #4a8fd6; box-shadow: 0 4px 0 #4a8fd6; }
+.steen.grijs { border-color: #8d939c; box-shadow: 0 4px 0 #8d939c; }
+.steen:active { transform: translateY(3px); box-shadow: none; }
+.steen small { font-size: 13px; font-weight: 700; opacity: .75; }
+@media (max-width: 900px) { .rij .steen small { display: none; } }
+.klein-link { display: block; margin: 22px auto 0; background: none; border: none; text-decoration: underline; font-size: 14px; opacity: .55; }
+
+/* ---------- Oefenen ---------- */
+.boven { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+.terug { background: #fff; border: 3px solid var(--paars); border-radius: 14px; padding: 10px 16px; font-size: 20px; font-weight: 700; white-space: nowrap; }
+#sterren { flex: 1; display: flex; justify-content: space-around; gap: 4px; }
+.ster { font-size: clamp(30px, 5.5vw, 52px); line-height: 1; color: #d6d0c2; transition: transform .2s; }
+.ster.vol { color: var(--geel); text-shadow: 0 2px 0 #c99a00; }
+.ster.pop { animation: pop .6s ease; }
+@keyframes pop { 0% { transform: scale(.3) rotate(-40deg); } 60% { transform: scale(1.5) rotate(15deg); } 100% { transform: scale(1); } }
+
+.oefen-raster { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.links, .rechts { min-width: 0; }
+
+.som {
+  background: #fff; border: 4px solid #e9dfc6; border-radius: 22px;
+  padding: 18px 10px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 18px;
+  font-size: clamp(54px, 11vw, 100px); font-weight: 800; line-height: 1.1;
+}
+.invul {
+  width: 2.3ch; font: inherit; text-align: center; color: var(--paars);
+  border: 4px dashed var(--paars); border-radius: 16px; background: #f4efff; padding: 0; height: 1.25em;
+  caret-color: transparent; pointer-events: none;
+}
+.som.schud { animation: schud .35s; }
+@keyframes schud { 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
+.feedback { min-height: 70px; margin: 10px 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 16px; text-align: center; font-size: 30px; font-weight: 800; }
+.feedback.goed { color: #1e8a4a; }
+.feedback.bijna { color: #b86a00; }
+.feedback .knop { font-size: 24px; padding: 12px 22px; min-height: 0; }
+.feedback .uitleg { font-size: 26px; font-weight: 700; flex-basis: 100%; }
+
+.toetsen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 460px; margin: 0 auto 14px; }
+.toets { height: 70px; font-size: 38px; font-weight: 800; background: #fff; border: 3px solid #d6c9a6; border-radius: 16px; box-shadow: 0 4px 0 #d6c9a6; }
+.toets:active { transform: translateY(3px); box-shadow: 0 1px 0 #d6c9a6; }
+.toets.wis { background: #ffe3e3; border-color: #e8b0b0; box-shadow: 0 4px 0 #e8b0b0; }
+
+.onder { display: flex; gap: 14px; max-width: 460px; margin: 0 auto; }
+.knop { flex: 1; min-height: 80px; border-radius: 20px; border: none; font-size: 32px; font-weight: 800; color: #fff; box-shadow: 0 5px 0 #0003; }
+.knop:active { transform: translateY(3px); box-shadow: 0 2px 0 #0003; }
+.knop.hulp { background: #f08a24; }
+.knop.klaar { background: #2a9d5c; }
+.knop.hulp small { display: block; font-size: 14px; font-weight: 700; opacity: .9; }
+
+/* ---------- Hulp ---------- */
+.hulp-vak { background: #fff; border: 4px solid #f2d9a6; border-radius: 22px; padding: 12px; margin-top: 8px; }
+.hulp-titel { font-size: 22px; font-weight: 800; margin-bottom: 4px; text-align: center; }
+.lijn-kop { font-size: 24px; text-align: center; }
+.lijn-svg { width: 100%; height: auto; display: block; }
+.lijn-knoppen { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.sprong { min-width: 96px; height: 62px; font-size: 28px; font-weight: 800; color: #fff; border: none; border-radius: 16px; box-shadow: 0 4px 0 #0003; }
+.sprong.terug { background: #777; }
+
+.splits-rij { margin: 6px 0 10px; }
+.splits-rij.operand .blok.tien { background: #1f9a9a; }
+.rij-label { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.groepen { display: flex; gap: 22px; flex-wrap: wrap; }
+.groep { padding: 8px 10px; border-radius: 14px; border: 3px solid transparent; min-width: 80px; }
+.groep small { display: block; font-size: 17px; font-weight: 700; margin-top: 4px; }
+.groep.veranderd { border-color: #e0457b; background: #ffe6ef; animation: gloei 1.2s ease-in-out infinite alternate; }
+.groep.blijft { opacity: .6; }
+@keyframes gloei { to { box-shadow: 0 0 14px 2px #e0457b99; } }
+.blokken { display: flex; flex-wrap: wrap; gap: 5px; align-items: flex-end; }
+.blok { display: inline-block; border-radius: 6px; font-weight: 800; color: #fff; text-align: center; }
+.blok.tien { width: 34px; height: 64px; background: var(--blauw-blok); font-size: 18px; line-height: 64px; }
+.blok.een { width: 30px; height: 30px; background: var(--geel); border: 2px solid #c99a00; }
+.blok.gezocht { background: #e5f7ec; border: 3px dashed #2a9d5c; color: #2a9d5c; line-height: 24px; }
+.leeg { font-size: 22px; color: #999; }
+
+/* ---------- Einde ---------- */
+.einde-kaart { background: #fff; border: 4px solid #e9dfc6; border-radius: 26px; padding: 26px 18px; text-align: center; margin-top: 16px; }
+#einde-sterren { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
+#einde-sterren .ster { font-size: 52px; }
+#einde-tekst { font-size: 26px; font-weight: 700; }
+#einde-steen { display: flex; justify-content: center; margin: 14px 0; }
+#einde-steen .steen { flex: 0 0 auto; width: 200px; pointer-events: none; }
+.einde-knoppen { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.einde-knoppen .knop { flex: 0 1 300px; }
+
+/* Tablet liggend: som links, toetsenbord rechts */
+@media (min-width: 860px) and (min-aspect-ratio: 5/4) {
+  .oefen-raster { grid-template-columns: 1.15fr 1fr; align-items: start; }
+  .som { font-size: clamp(54px, 8vw, 100px); }
+  .toets { height: 74px; }
+}
