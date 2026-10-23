@@ -3,13 +3,16 @@
   var KLEUR = { 10: '#2f7fd8', 5: '#8e5bd1', 1: '#f08a24' };
 
   // ---------- Niveau 2: getallenlijn ----------
+  function kleurVan(g) { return KLEUR[g] || '#2f7fd8'; }
+
   function venster(som) {
     if (som.max <= 20) return [0, 20];
     var laag = Math.min(som.start, som.end), hoog = Math.max(som.start, som.end);
-    var lo = Math.max(0, 10 * Math.floor((laag - 1) / 10) - 10);
-    var hi = Math.min(100, 10 * Math.ceil((hoog + 1) / 10) + 10);
-    while (hi - lo < 40) { if (lo > 0) lo -= 10; else hi += 10; }
-    return [lo, Math.min(hi, 100)];
+    var g = hoog <= 100 ? 10 : 100, top = hoog <= 100 ? 100 : 1000;
+    var lo = Math.max(0, g * Math.floor((laag - 1) / g) - g);
+    var hi = Math.min(top, g * Math.ceil((hoog + 1) / g) + g);
+    while (hi - lo < 4 * g) { if (lo > 0) lo -= g; else hi += g; }
+    return [lo, Math.min(hi, top)];
   }
 
   function lijn(el, som) {
@@ -27,10 +30,10 @@
     var svg = el.querySelector('svg');
     var knoppen = el.querySelector('.lijn-knoppen');
 
-    [10, 5, 1].forEach(function (g) {
+    (som.stappen || [10, 5, 1]).forEach(function (g) {
       var b = document.createElement('button');
       b.className = 'sprong'; b.type = 'button';
-      b.style.background = KLEUR[g];
+      b.style.background = kleurVan(g);
       b.textContent = teken + g;
       b.addEventListener('click', function () {
         var nieuw = pos + som.richting * g;
@@ -52,12 +55,14 @@
 
     function teken_() {
       var h = '<line x1="30" y1="' + Y + '" x2="870" y2="' + Y + '" stroke="#555" stroke-width="4" stroke-linecap="round"/>';
-      var alleLabels = hi - lo <= 20;
-      for (var n = lo; n <= hi; n++) {
-        var grote = n % 10 === 0, half = n % 5 === 0;
+      // Bij een lange lijn (tot 1000) tekenen we streepjes per 10 en getallen per 100.
+      var span = hi - lo, klein = span <= 100 ? 1 : 10;
+      var labelStap = span <= 20 ? 1 : span <= 100 ? 10 : 100;
+      for (var n = lo; n <= hi; n += klein) {
+        var grote = n % labelStap === 0, half = labelStap > 1 && n % (labelStap / 2) === 0;
         var hoogte = grote ? 20 : half ? 14 : 8;
         h += '<line x1="' + x(n) + '" y1="' + Y + '" x2="' + x(n) + '" y2="' + (Y + hoogte) + '" stroke="#555" stroke-width="' + (grote ? 3 : 2) + '"/>';
-        if (alleLabels || grote) h += '<text x="' + x(n) + '" y="' + (Y + 52) + '" text-anchor="middle" font-size="30" fill="#444">' + n + '</text>';
+        if (grote) h += '<text x="' + x(n) + '" y="' + (Y + 52) + '" text-anchor="middle" font-size="30" fill="#444">' + n + '</text>';
       }
       if (som.type === 'mis' || som.type === 'splits') {
         h += '<circle cx="' + x(som.end) + '" cy="' + Y + '" r="17" fill="none" stroke="#e0457b" stroke-width="4" stroke-dasharray="6 5"/>' +
@@ -66,8 +71,8 @@
       sprongen.forEach(function (s) {
         var x0 = x(s.van), x1 = x(s.naar), mid = (x0 + x1) / 2;
         var top = Y - Math.min(90, 28 + Math.abs(x1 - x0) / 3);
-        h += '<path d="M' + x0 + ',' + (Y - 6) + ' Q' + mid + ',' + (top - 30) + ' ' + x1 + ',' + (Y - 6) + '" fill="none" stroke="' + KLEUR[s.g] + '" stroke-width="5" stroke-linecap="round"/>' +
-             '<text x="' + mid + '" y="' + (top - 6) + '" text-anchor="middle" font-size="34" font-weight="700" fill="' + KLEUR[s.g] + '">' + (som.richting > 0 ? '+' : '−') + s.g + '</text>';
+        h += '<path d="M' + x0 + ',' + (Y - 6) + ' Q' + mid + ',' + (top - 30) + ' ' + x1 + ',' + (Y - 6) + '" fill="none" stroke="' + kleurVan(s.g) + '" stroke-width="5" stroke-linecap="round"/>' +
+             '<text x="' + mid + '" y="' + (top - 6) + '" text-anchor="middle" font-size="34" font-weight="700" fill="' + kleurVan(s.g) + '">' + (som.richting > 0 ? '+' : '−') + s.g + '</text>';
       });
       h += '<circle cx="' + x(som.start) + '" cy="' + Y + '" r="9" fill="#fff" stroke="#2a9d5c" stroke-width="5"/>';
       h += '<circle cx="' + x(pos) + '" cy="' + Y + '" r="13" fill="#2a9d5c"/>';
@@ -108,8 +113,32 @@
     return n + ' = ' + d.t * 10 + ' + ' + d.e;
   }
 
+  // Keersommen en deelsommen als groepjes.
+  function groepje(aantal, tien) {
+    var c = '';
+    for (var i = 0; i < aantal; i++) c += tien ? '<span class="blok tien">10</span>' : '<span class="blok een"></span>';
+    return '<div class="groep omlijnd"><div class="blokken">' + c + '</div></div>';
+  }
+
+  function groepjes(som) {
+    var a = som.a, b = som.b, i, g = '', label, tekst;
+    if (som.type === 'keer') {
+      var tien = b >= 10, n = tien ? b / 10 : b;
+      for (i = 0; i < a; i++) g += groepje(n, tien);
+      label = a + ' groepjes van ' + b;
+      tekst = tien ? a + ' × ' + n + ' tientallen = ' + (a * n) + ' tientallen' : 'Tel alle blokjes samen.';
+    } else {
+      for (i = 0; i < som.antwoord; i++) g += groepje(b, false);
+      label = a + ' blokjes in groepjes van ' + b;
+      tekst = 'Hoeveel groepjes zijn het?';
+    }
+    return '<div class="splits-rij"><div class="rij-label">' + label + '</div><div class="groepen klein">' + g + '</div>' +
+           '<div class="rij-label">' + tekst + '</div></div>';
+  }
+
   function splits(el, som) {
     var h = '';
+    if (som.type === 'keer' || som.type === 'deel') { el.innerHTML = groepjes(som); return; }
     if (som.type === 'splits') {
       // Het getal als blokjes: het bekende deel geel, het ontbrekende deel gestippeld.
       var c = '';

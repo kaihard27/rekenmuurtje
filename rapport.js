@@ -26,10 +26,11 @@
       laag.rijen.forEach(function (ids) {
         ids.forEach(function (id) {
           var steen = laag.stenen.filter(function (s) { return s.id === id; })[0];
+          if (steen.binnenkort) return;
           rijen.push({ steen: steen, kleur: Voortgang.kleur(id), r: Voortgang.reeksen(id), gem: Voortgang.gemiddelde(id) });
         });
       });
-      uit.push({ laag: laag, rijen: rijen });
+      if (rijen.length) uit.push({ laag: laag, rijen: rijen });
     });
     return uit;
   }

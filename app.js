@@ -14,9 +14,15 @@
 
   // ---------- Muurtje ----------
   function steenKnop(steen) {
-    var k = Voortgang.kleur(steen.id);
     var b = document.createElement('button');
     b.type = 'button';
+    if (steen.binnenkort) {
+      b.className = 'steen binnenkort';
+      b.disabled = true;
+      b.innerHTML = steen.label + '<small>binnenkort</small>';
+      return b;
+    }
+    var k = Voortgang.kleur(steen.id);
     b.className = 'steen ' + k;
     b.innerHTML = steen.label + '<small>' + STATUS[k] + '</small>';
     return b;
@@ -93,7 +99,7 @@
     knop.innerHTML = 'Hulp' + (S.hulp > 1 ? '<small>niveau ' + S.hulp + ' van 3</small>' : '');
     if (S.hulp === 1) { vak.hidden = true; vak.innerHTML = ''; return; }
     vak.hidden = false;
-    vak.innerHTML = '<div class="hulp-titel">' + (S.hulp === 2 ? 'Getallenlijn: tik de sprongen' : 'Splitsen: tientallen en eenheden') + '</div><div id="hulp-inhoud"></div>';
+    vak.innerHTML = '<div class="hulp-titel">' + (S.hulp === 2 ? 'Getallenlijn: tik de sprongen' : /^(keer|deel)$/.test(S.cur.som.type) ? 'Groepjes maken' : 'Splitsen: tientallen en eenheden') + '</div><div id="hulp-inhoud"></div>';
     var inhoud = $('hulp-inhoud');
     if (S.hulp === 2) Hulp.lijn(inhoud, S.cur.som); else Hulp.splits(inhoud, S.cur.som);
   }

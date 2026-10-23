@@ -60,6 +60,11 @@ h1 { font-size: 40px; margin: 8px 0 4px; text-align: center; }
 .steen.blauw { border-color: #4a8fd6; box-shadow: 0 4px 0 #4a8fd6; }
 .steen.grijs { border-color: #8d939c; box-shadow: 0 4px 0 #8d939c; }
 .steen:active { transform: translateY(3px); box-shadow: none; }
+.steen.binnenkort { font-size: clamp(14px, 2vw, 22px); overflow-wrap: anywhere; background: #f1ece0; border: 3px dashed #cfc7b2; box-shadow: none; color: #8d8672; opacity: .85; font-weight: 700; }
+.steen.binnenkort:active { transform: none; }
+.groepen.klein { gap: 10px; }
+.groep.omlijnd { border-color: #bcd6f5; background: #eef5ff; min-width: 0; padding: 6px 8px; }
+.groep.omlijnd .blokken { max-width: 150px; }
 .steen small { font-size: 13px; font-weight: 700; opacity: .75; }
 @media (max-width: 900px) { .rij .steen small { display: none; } }
 .klein-link { display: block; margin: 22px auto 0; background: none; border: none; text-decoration: underline; font-size: 14px; opacity: .55; }
