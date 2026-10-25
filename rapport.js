@@ -84,6 +84,22 @@
     }).join('');
   }
 
+  // Het leerwerkboek: per les hoe het gaat, zodat je ziet hoe het huiswerk gaat.
+  function boekTabel() {
+    var h = Sommen.boek.map(function (blok) {
+      var body = blok.lessen.map(function (les) {
+        var r = Voortgang.reeksen(les.id), k = Voortgang.kleur(les.id), laatste = r[r.length - 1];
+        var f = foutenVan(r).slice(0, 2).map(function (e) { return esc(e.s) + (e.n > 1 ? ' (' + e.n + '×)' : ''); }).join('<br>') || '–';
+        return '<tr><td><b>Les ' + les.nr + '</b> · blz. ' + les.pag + '–' + les.tot + '<br>' + esc(les.titel) + '</td>' +
+          '<td><span class="chip ' + k + '">' + STATUS[k] + '</span></td><td>' + r.length + '</td>' +
+          '<td>' + (laatste ? pct(laatste.s) : '–') + '</td><td>' + (laatste && laatste.z !== undefined ? laatste.z + ' van 10' : '–') + '</td>' +
+          '<td>' + verloop(r) + '</td><td>' + datum(laatste && laatste.d) + '</td><td>' + f + '</td></tr>';
+      }).join('');
+      return '<table><caption>Leerwerkboek · ' + esc(blok.titel) + '</caption><thead><tr><th>Les</th><th>Status</th><th>Reeksen</th><th>Laatste score</th><th>Zonder hulp (laatste)</th><th>Verloop</th><th>Laatst</th><th>Vaak fout</th></tr></thead><tbody>' + body + '</tbody></table>';
+    }).join('');
+    $('tabellen').insertAdjacentHTML('afterbegin', h);
+  }
+
   function melding(t) { $('melding').textContent = t; }
 
   $('opslaan').addEventListener('click', function () {
@@ -100,7 +116,7 @@
     if (!f) return;
     var lezer = new FileReader();
     lezer.onload = function () {
-      try { Voortgang.importeer(lezer.result); teken(); melding('Voortgang geladen en samengevoegd.'); }
+      try { Voortgang.importeer(lezer.result); teken(); boekTabel(); melding('Voortgang geladen en samengevoegd.'); }
       catch (err) { melding('Dat lukte niet: ' + err.message); }
     };
     lezer.readAsText(f);
@@ -110,4 +126,5 @@
   $('print').addEventListener('click', function () { window.print(); });
 
   teken();
+  boekTabel();
 })();

@@ -56,10 +56,56 @@ h1 { font-size: 40px; margin: 8px 0 4px; text-align: center; }
   box-shadow: 0 4px 0 #c9c2b0;
   transition: transform .1s;
 }
+.steen { overflow-wrap: anywhere; hyphens: auto; }
+@media (max-width: 640px) {
+  .rij { flex-wrap: wrap; }
+  .steen { flex: 1 1 28%; font-size: 17px; }
+  .laag-blok { flex-basis: 56px; font-size: 14px; }
+  .laag-blok b { font-size: 30px; }
+}
 .steen.groen { border-color: #3fae60; box-shadow: 0 4px 0 #3fae60; }
 .steen.blauw { border-color: #4a8fd6; box-shadow: 0 4px 0 #4a8fd6; }
 .steen.grijs { border-color: #8d939c; box-shadow: 0 4px 0 #8d939c; }
 .steen:active { transform: translateY(3px); box-shadow: none; }
+/* ---------- Huiswerk en boek ---------- */
+.huiswerk { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; background: #fff; border: 4px solid var(--paars); border-radius: 20px; padding: 14px 18px; margin: 0 0 16px; }
+.hw-tekst { flex: 1 1 280px; display: flex; flex-direction: column; gap: 2px; }
+.hw-tekst small { font-size: 16px; font-weight: 700; color: var(--paars); }
+.hw-tekst b { font-size: clamp(22px, 3.2vw, 30px); }
+.hw-tekst span { font-size: 18px; opacity: .75; }
+.hw-knoppen { display: flex; gap: 10px; flex: 0 1 380px; }
+.hw-knoppen .knop { min-height: 64px; font-size: 24px; }
+.nav { margin: 0 0 6px; }
+.boek-blok h2 { font-size: 28px; margin: 18px 0 8px; }
+.lessen { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.les-tegel { position: relative; }
+.les-start {
+  width: 100%; height: 100%; min-height: 128px; padding: 10px 8px; border: 3px solid #c9c2b0; border-radius: 14px; box-shadow: 0 4px 0 #c9c2b0;
+  background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-align: center;
+}
+.les-start:active { transform: translateY(3px); box-shadow: none; }
+.les-nr { font-size: 26px; font-weight: 800; }
+.les-titel { font-size: 15px; font-weight: 700; line-height: 1.2; }
+.les-pag { font-size: 15px; opacity: .75; }
+.les-start small { font-size: 13px; font-weight: 700; opacity: .75; }
+.les-tegel.grijs .les-start { background: var(--grijs); border-color: #8d939c; box-shadow: 0 4px 0 #8d939c; }
+.les-tegel.blauw .les-start { background: var(--blauw); border-color: #4a8fd6; box-shadow: 0 4px 0 #4a8fd6; }
+.les-tegel.groen .les-start { background: var(--groen); border-color: #3fae60; box-shadow: 0 4px 0 #3fae60; }
+.les-tegel.nu .les-start { outline: 5px solid var(--paars); outline-offset: 2px; }
+.les-pin { position: absolute; top: 4px; right: 4px; width: 44px; height: 44px; border-radius: 50%; border: none; background: #ffffffcc; font-size: 22px; opacity: .5; }
+.les-tegel.nu .les-pin { opacity: 1; background: var(--paars); }
+
+/* Sommen met een verhaaltje of een klok */
+.som.verhaal-modus { flex-direction: column; gap: 10px; font-size: clamp(26px, 4vw, 38px); font-weight: 700; padding: 16px 18px; }
+.verhaal { text-align: center; line-height: 1.3; }
+.antwoordrij { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: clamp(34px, 5vw, 56px); font-weight: 800; }
+.invul.breed { width: 3.4ch; }
+.invul.tijd { width: 5.4ch; }
+.eenheid { font-size: .6em; font-weight: 700; }
+.klok-vak { width: clamp(150px, 26vw, 230px); }
+.klok-svg { width: 100%; height: auto; display: block; }
+.hulp-tekst { font-size: 22px; line-height: 1.45; margin: 6px 4px; }
+
 .steen.binnenkort { font-size: clamp(14px, 2vw, 22px); overflow-wrap: anywhere; background: #f1ece0; border: 3px dashed #cfc7b2; box-shadow: none; color: #8d8672; opacity: .85; font-weight: 700; }
 .steen.binnenkort:active { transform: none; }
 .groepen.klein { gap: 10px; }
@@ -134,6 +180,7 @@ h1 { font-size: 40px; margin: 8px 0 4px; text-align: center; }
 .blokken { display: flex; flex-wrap: wrap; gap: 5px; align-items: flex-end; }
 .blok { display: inline-block; border-radius: 6px; font-weight: 800; color: #fff; text-align: center; }
 .blok.tien { width: 34px; height: 64px; background: var(--blauw-blok); font-size: 18px; line-height: 64px; }
+.blok.honderd { width: 56px; height: 56px; background: #d6456b; font-size: 18px; line-height: 56px; }
 .blok.een { width: 30px; height: 30px; background: var(--geel); border: 2px solid #c99a00; }
 .blok.gezocht { background: #e5f7ec; border: 3px dashed #2a9d5c; color: #2a9d5c; line-height: 24px; }
 .leeg { font-size: 22px; color: #999; }

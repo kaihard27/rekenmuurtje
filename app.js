@@ -4,13 +4,25 @@
   var REEKS = 10;
   var GOED = ['Super! 🎉', 'Goed gedaan! 🌟', 'Yes, helemaal goed! 🙌', 'Wat knap! 👏', 'Top! 🚀', 'Fantastisch! 🥳', 'Lekker bezig! 😊', 'Ja! Dat is het! ✨'];
   var STATUS = { wit: 'nog niet geoefend', grijs: 'meer oefenen', blauw: 'bijna goed', groen: 'goed' };
+  var HUISWERK_SLEUTEL = 'rekenmuurtje.huiswerk';
+  var STANDAARD_LES = 'boek-b3-l5';   // hier is ze nu: blok 3, les 5 (blz. 88 en 89)
   var S = null;       // toestand van de lopende reeks
   var timer = null;
 
   function toon(naam) {
-    ['muur', 'oefen', 'einde'].forEach(function (n) { $(n).classList.toggle('actief', n === naam); });
+    ['muur', 'boek', 'oefen', 'einde'].forEach(function (n) { $(n).classList.toggle('actief', n === naam); });
     window.scrollTo(0, 0);
   }
+
+  // ---------- Huiswerk: de les waar ze nu mee bezig is ----------
+  function huidigeLesId() {
+    try { var id = localStorage.getItem(HUISWERK_SLEUTEL); if (id && Sommen.lesMetId(id)) return id; } catch (e) { /* standaard */ }
+    return STANDAARD_LES;
+  }
+  function zetHuidigeLes(id) {
+    try { localStorage.setItem(HUISWERK_SLEUTEL, id); } catch (e) { /* niet erg */ }
+  }
+  function paginas(les) { return 'blz. ' + les.pag + '–' + les.tot; }
 
   // ---------- Muurtje ----------
   function steenKnop(steen) {
@@ -28,10 +40,22 @@
     return b;
   }
 
+  function bouwHuiswerk() {
+    var les = Sommen.lesMetId(huidigeLesId());
+    var d = $('huiswerk');
+    d.innerHTML = '<div class="hw-tekst"><small>Huiswerk · Getal &amp; Ruimte Junior 5</small>' +
+      '<b>Blok ' + les.blok + ' · Les ' + les.nr + ' – ' + les.titel + '</b><span>' + paginas(les) + '</span></div>' +
+      '<div class="hw-knoppen"><button id="hw-start" class="knop klaar" type="button">Oefenen</button>' +
+      '<button id="hw-boek" class="knop hulp" type="button">Alle lessen</button></div>';
+    $('hw-start').addEventListener('click', function () { start(les, 'muur'); });
+    $('hw-boek').addEventListener('click', function () { bouwBoek(); toon('boek'); });
+  }
+
   function bouwMuur() {
+    bouwHuiswerk();
     var doos = $('muur-lagen');
     doos.innerHTML = '';
-    // Laag 2 bovenaan, laag 1 onderaan; links het lagenblok, rechts de rijen steentjes.
+    // Hoogste laag bovenaan; links het lagenblok, rechts de rijen steentjes.
     Sommen.lagen.slice().reverse().forEach(function (laag) {
       var d = document.createElement('div');
       d.className = 'laag';
@@ -43,7 +67,7 @@
         ids.forEach(function (id) {
           var steen = laag.stenen.filter(function (s) { return s.id === id; })[0];
           var b = steenKnop(steen);
-          b.addEventListener('click', function () { start(steen); });
+          b.addEventListener('click', function () { start(steen, 'muur'); });
           rij.appendChild(b);
         });
         d.querySelector('.rijen').appendChild(rij);
@@ -52,12 +76,37 @@
     });
   }
 
+  // ---------- Het boek: alle lessen van blok 2 en 3 ----------
+  function bouwBoek() {
+    var nu = huidigeLesId();
+    var doos = $('boek-inhoud');
+    doos.innerHTML = '';
+    Sommen.boek.forEach(function (blok) {
+      var h = document.createElement('section');
+      h.className = 'boek-blok';
+      h.innerHTML = '<h2>' + blok.titel + '</h2><div class="lessen"></div>';
+      blok.lessen.forEach(function (les) {
+        var k = Voortgang.kleur(les.id);
+        var t = document.createElement('div');
+        t.className = 'les-tegel ' + k + (les.id === nu ? ' nu' : '');
+        t.innerHTML = '<button type="button" class="les-start"><span class="les-nr">Les ' + les.nr + '</span>' +
+          '<span class="les-titel">' + les.titel + '</span><span class="les-pag">' + paginas(les) + '</span>' +
+          '<small>' + STATUS[k] + '</small></button>' +
+          '<button type="button" class="les-pin" title="Hier ben ik nu" aria-label="Hier ben ik nu">📍</button>';
+        t.querySelector('.les-start').addEventListener('click', function () { start(les, 'boek'); });
+        t.querySelector('.les-pin').addEventListener('click', function () { zetHuidigeLes(les.id); bouwBoek(); });
+        h.querySelector('.lessen').appendChild(t);
+      });
+      doos.appendChild(h);
+    });
+  }
+
   // ---------- Reeks ----------
-  function start(steen) {
+  function start(steen, vanaf) {
     clearTimeout(timer);
     var reeks = Sommen.maakReeks(steen, REEKS);
     S = {
-      steen: steen,
+      steen: steen, vanaf: vanaf || 'muur',
       wachtrij: reeks.map(function (som, i) { return { slot: i, som: som, herhaling: false }; }),
       sterren: [], scores: [], fouten: [],
       cur: null, poging: 1, hulp: 1, maxHulp: 1, invoer: '', fase: 'vraag'
@@ -85,23 +134,55 @@
     tekenHulp();
   }
 
+  function isKlok() { return S.cur.som.type === 'klok'; }
+
   function tekenSom() {
-    var som = S.cur.som;
-    $('som').innerHTML = som.delen.map(function (d) {
-      return d === '?' ? '<input id="invul" class="invul" readonly inputmode="none" aria-label="antwoord">' : '<span>' + d + '</span>';
-    }).join('');
-    $('invul').value = S.invoer;
+    var som = S.cur.som, el = $('som');
+    var invul = '<input id="invul" class="invul' + (som.type === 'klok' ? ' tijd' : som.tekst ? ' breed' : '') +
+      '" readonly inputmode="none" aria-label="antwoord">';
+    el.classList.toggle('verhaal-modus', !!(som.tekst || som.type === 'klok'));
+    if (som.type === 'klok') {
+      el.innerHTML = '<div class="klok-vak">' + Hulp.klok(som.u, som.m) + '</div>' +
+        '<div class="verhaal">Hoe laat is het? Typ de tijd met 4 cijfers.</div>' +
+        '<div class="antwoordrij">' + invul + '<span class="eenheid">uur</span></div>';
+    } else if (som.tekst) {
+      el.innerHTML = '<div class="verhaal">' + som.tekst + '</div>' +
+        '<div class="antwoordrij">' + invul + (som.eenheid ? '<span class="eenheid">' + som.eenheid + '</span>' : '') + '</div>';
+    } else {
+      el.innerHTML = som.delen.map(function (d) { return d === '?' ? invul : '<span>' + d + '</span>'; }).join('');
+    }
+    toonInvoer();
+  }
+
+  function toonInvoer() {
+    var v = S.invoer;
+    if (isKlok()) { var p = (v + '····').slice(0, 4); v = p.slice(0, 2) + ':' + p.slice(2); }
+    $('invul').value = v;
+  }
+
+  function antwoordTekst(som) {
+    return som.type === 'klok' ? som.antwoord.slice(0, 2) + ':' + som.antwoord.slice(2) : som.antwoord;
   }
 
   function tekenHulp() {
-    var vak = $('hulp-vak');
-    var knop = $('hulp-knop');
+    var vak = $('hulp-vak'), knop = $('hulp-knop'), som = S.cur.som, ht = som.hulpTekst;
     knop.innerHTML = 'Hulp' + (S.hulp > 1 ? '<small>niveau ' + S.hulp + ' van 3</small>' : '');
     if (S.hulp === 1) { vak.hidden = true; vak.innerHTML = ''; return; }
     vak.hidden = false;
-    vak.innerHTML = '<div class="hulp-titel">' + (S.hulp === 2 ? 'Getallenlijn: tik de sprongen' : /^(keer|deel)$/.test(S.cur.som.type) ? 'Groepjes maken' : 'Splitsen: tientallen en eenheden') + '</div><div id="hulp-inhoud"></div>';
-    var inhoud = $('hulp-inhoud');
-    if (S.hulp === 2) Hulp.lijn(inhoud, S.cur.som); else Hulp.splits(inhoud, S.cur.som);
+    var titel, doe;
+    var tekstHulp = ht && ht[S.hulp - 2];
+    if (tekstHulp) {
+      titel = S.hulp === 2 ? 'Tip' : 'Uitleg';
+      doe = function (el) { Hulp.tekst(el, tekstHulp); };
+    } else if (S.hulp === 2) {
+      titel = som.type === 'duur' ? 'Getallenlijn: tel de minuten' : 'Getallenlijn: tik de sprongen';
+      doe = function (el) { Hulp.lijn(el, som); };
+    } else {
+      titel = /^(keer|deel)$/.test(som.type) ? 'Groepjes maken' : 'Splitsen: honderdtallen, tientallen en eenheden';
+      doe = function (el) { Hulp.splits(el, som); };
+    }
+    vak.innerHTML = '<div class="hulp-titel">' + titel + '</div><div id="hulp-inhoud"></div>';
+    doe($('hulp-inhoud'));
   }
 
   function zetHulp(niveau) {
@@ -116,14 +197,14 @@
   }
 
   function typ(cijfer) {
-    if (S.fase !== 'vraag' || S.invoer.length >= 3) return;
-    S.invoer = (S.invoer + cijfer).replace(/^0+(?=\d)/, '');
-    $('invul').value = S.invoer;
+    if (S.fase !== 'vraag' || S.invoer.length >= 4) return;
+    S.invoer = isKlok() ? S.invoer + cijfer : (S.invoer + cijfer).replace(/^0+(?=\d)/, '');
+    toonInvoer();
   }
   function wis() {
     if (S.fase !== 'vraag') return;
     S.invoer = S.invoer.slice(0, -1);
-    $('invul').value = S.invoer;
+    toonInvoer();
   }
 
   function feedback(klasse, html, knoppen) {
@@ -140,9 +221,10 @@
 
   function klaar() {
     if (!S || S.fase !== 'vraag') return;
-    if (S.invoer === '') { schud(); return; }
-    var c = S.cur;
-    var goed = Number(S.invoer) === c.som.antwoord;
+    var c = S.cur, inv = S.invoer;
+    if (isKlok() && inv.length === 3) inv = '0' + inv;      // "715" telt als 07:15
+    if (inv === '' || (isKlok() && inv.length < 4)) { schud(); return; }
+    var goed = inv === String(c.som.antwoord);
 
     if (goed) {
       var score = S.poging === 2 ? 0.25 : (S.maxHulp > 1 ? 0.5 : 1);
@@ -172,7 +254,7 @@
       S.scores[c.slot] = 0;
       S.wachtrij.splice(Math.min(S.wachtrij.length, 3), 0, { slot: c.slot, som: c.som, herhaling: true });
     }
-    feedback('bijna', '<div class="uitleg">Het antwoord is <b>' + c.som.antwoord + '</b>:<br>' + c.som.oplossing + '</div>', [
+    feedback('bijna', '<div class="uitleg">Het antwoord is <b>' + antwoordTekst(c.som) + '</b>:<br>' + c.som.oplossing + '</div>', [
       { tekst: 'Volgende', klasse: 'klaar', doe: volgende }
     ]);
   }
@@ -180,7 +262,7 @@
   function nogEenKeer(metHint) {
     S.fase = 'vraag';
     S.invoer = '';
-    $('invul').value = '';
+    toonInvoer();
     $('feedback').className = 'feedback';
     $('feedback').innerHTML = '';
     if (metHint) zetHulp(2);
@@ -201,11 +283,16 @@
     $('einde-tekst').textContent = zonderHulp === REEKS
       ? 'Alles zonder hulp goed! Wat ben jij slim! 🎉'
       : zonderHulp + ' van de ' + REEKS + ' sommen zonder hulp goed. Goed gedaan! 🌟';
-    var k = Voortgang.kleur(S.steen.id);
     var b = steenKnop(S.steen);
     $('einde-steen').innerHTML = '';
     $('einde-steen').appendChild(b);
+    $('naar-muur').textContent = S.vanaf === 'boek' ? 'Naar het boek' : 'Naar het muurtje';
     toon('einde');
+  }
+
+  function terugNaarStart() {
+    clearTimeout(timer);
+    if (S && S.vanaf === 'boek') { bouwBoek(); toon('boek'); } else { bouwMuur(); toon('muur'); }
   }
 
   // ---------- Opstarten ----------
@@ -229,10 +316,11 @@
     });
     $('terug').addEventListener('click', function () {
       if (S && S.fase !== 'einde' && S.sterren.some(Boolean) && !confirm('Stoppen? Deze reeks wordt dan niet bewaard.')) return;
-      clearTimeout(timer); bouwMuur(); toon('muur');
+      terugNaarStart();
     });
-    $('opnieuw').addEventListener('click', function () { start(S.steen); });
-    $('naar-muur').addEventListener('click', function () { bouwMuur(); toon('muur'); });
+    $('opnieuw').addEventListener('click', function () { start(S.steen, S.vanaf); });
+    $('naar-muur').addEventListener('click', terugNaarStart);
+    $('boek-terug').addEventListener('click', function () { bouwMuur(); toon('muur'); });
     $('reset').addEventListener('click', function () {
       if (confirm('Alle voortgang wissen?')) { Voortgang.wis(); bouwMuur(); }
     });
