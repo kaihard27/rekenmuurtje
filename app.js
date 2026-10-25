@@ -138,7 +138,7 @@
 
   function tekenSom() {
     var som = S.cur.som, el = $('som');
-    var invul = '<input id="invul" class="invul' + (som.type === 'klok' ? ' tijd' : som.tekst ? ' breed' : '') +
+    var invul = '<input id="invul" class="invul' + (som.type === 'klok' ? ' tijd' : som.tekst ? ' breed' : som.max >= 100 ? ' lang' : '') +
       '" readonly inputmode="none" aria-label="antwoord">';
     el.classList.toggle('verhaal-modus', !!(som.tekst || som.type === 'klok'));
     if (som.type === 'klok') {
