@@ -10,7 +10,7 @@
   var timer = null;
 
   function toon(naam) {
-    ['muur', 'boek', 'oefen', 'einde'].forEach(function (n) { $(n).classList.toggle('actief', n === naam); });
+    ['muur', 'boek', 'gereedschap', 'oefen', 'einde'].forEach(function (n) { $(n).classList.toggle('actief', n === naam); });
     window.scrollTo(0, 0);
   }
 
@@ -46,8 +46,10 @@
     d.innerHTML = '<div class="hw-tekst"><small>Huiswerk · Getal &amp; Ruimte Junior 5</small>' +
       '<b>Blok ' + les.blok + ' · Les ' + les.nr + ' – ' + les.titel + '</b><span>' + paginas(les) + '</span></div>' +
       '<div class="hw-knoppen"><button id="hw-start" class="knop klaar" type="button">Oefenen</button>' +
-      '<button id="hw-boek" class="knop hulp" type="button">Alle lessen</button></div>';
+      '<button id="hw-boek" class="knop hulp" type="button">Alle lessen</button>' +
+      '<button id="hw-gr" class="knop gr" type="button">Getallenlijn en klok</button></div>';
     $('hw-start').addEventListener('click', function () { start(les, 'muur'); });
+    $('hw-gr').addEventListener('click', function () { toon('gereedschap'); });
     $('hw-boek').addEventListener('click', function () { bouwBoek(); toon('boek'); });
   }
 
@@ -310,6 +312,8 @@
   function init() {
     bouwMuur();
     toetsenbord();
+    Gereedschap.init();
+    $('gr-terug').addEventListener('click', function () { bouwMuur(); toon('muur'); });
     $('klaar-knop').addEventListener('click', klaar);
     $('hulp-knop').addEventListener('click', function () {
       if (S && S.fase === 'vraag') zetHulp(S.hulp % 3 + 1);

@@ -397,5 +397,5 @@
     return reeks;
   }
 
-  root.Sommen = { lagen: lagen, boek: boekBlokken, maakReeks: maakReeks, steenMetId: steenMetId, lesMetId: lesMetId };
+  root.Sommen = { lagen: lagen, boek: boekBlokken, maakReeks: maakReeks, steenMetId: steenMetId, lesMetId: lesMetId, woorden: woorden };
 })(typeof window !== 'undefined' ? window : globalThis);
